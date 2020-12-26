@@ -1,0 +1,29 @@
+version: "3"
+services:
+  registry:
+    image: cs/eureka-service
+    ports:
+      - "8761:8761"
+
+  gateway:
+    image: cs/gateway-service
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://registry:8761/eureka
+    ports:
+      - "8762:8762"
+    restart: on-failure
+    depends_on:
+      - registry
+
+  auth:
+    image: cs/auth-service
+    environment:
+      - JAVA_OPTS=
+        -DEUREKA_SERVER=http://registry:8761/eureka
+    ports:
+      - "9100:9100"
+    restart: on-failure
+    depends_on:
+      - registry
+      - gateway
